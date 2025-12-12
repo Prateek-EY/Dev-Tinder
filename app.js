@@ -4,22 +4,18 @@ const { connectDb }  = require('./config/database');
 
 const User = require('./models/user');
 
+
 const app = express();
 
 console.log("Hello, Dev-Tinder!");
 
+app.use(express.json());
+
 app.post('/signup', async (req, res) => {
     try{
-        const userObj = {
-            firstName: "Prateek1",
-            lastName: "Dev",
-            email: "prateek.dev1@example.com",
-            password: "securepassword",
-            age: "25",
-            gender: "Male"
-        };
+        console.log(req.body);
 
-        const user = new User(userObj);
+        const user = new User(req.body);
         await user.save();
         res.status(201).send("User signed up successfully");
     }
