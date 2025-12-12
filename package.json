@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Prateek-EY/Dev-Tinder#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongoose": "^9.0.1"
   }
 }
