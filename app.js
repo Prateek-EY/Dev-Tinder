@@ -2,18 +2,17 @@ const express = require('express');
 
 const app = express();
 
-app.use((req,res) => {
-  res.send('Hello World');
+
+
+app.get("/user",(req,res) => {
+    res.send("User route is working fine");
 });
 
-app.use("/", (req,res) => {
-    res.send('Welcome to the Home Page');
-});
 
-app.use("/test", (req,res) => {
-  res.send('Test route working');
-});
 
+// app.post("/user",(req,res) => {
+//     res.send("Post request to user route is working fine");
+// });
 
 
 app.listen(3000, () => {
