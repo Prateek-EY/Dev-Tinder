@@ -24,6 +24,16 @@ app.post('/signup', async (req, res) => {
     }
 });
 
+app.get('/user', async (req, res) => {
+    try {
+        const users = await User.findOne({email : req.body.emailId});
+        res.status(200).json(users);
+    } catch (err) {
+        console.error("Error in /user route:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 console.log("After /signup route");
 
 connectDb().then(() => {
