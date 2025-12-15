@@ -4,6 +4,10 @@ const { connectDb }  = require('./config/database');
 
 const User = require('./models/user');
 
+const bcrypt = require('bcrypt');
+
+const validator = require('validator');
+
 
 const app = express();
 
@@ -15,6 +19,9 @@ app.post('/signup', async (req, res) => {
     try{
         console.log(req.body);
 
+        const passwordHash = await bcrypt.hash(req.body.password, 10);
+        req.body.password = passwordHash;
+
         const user = new User(req.body);
         await user.save();
         res.status(201).send("User signed up successfully");
@@ -23,6 +30,31 @@ app.post('/signup', async (req, res) => {
         console.error("Error in /signup route:", err);
     }
 });
+
+app.post("/login", async (req,res) => {
+    try{
+
+        if(!validator.isEmail(req.body.email)){
+            return res.status(400).send("Invalid Email");
+        }
+
+        const user =  await User.findOne({ email : req.body.email });
+        if(!user){
+            return res.status(404).send("User not found");
+        }
+
+        const isPasswordMatch = await bcrypt.compare(req.body.password, user.password);
+        if(!isPasswordMatch){
+            return res.status(401).send("Incorrect Password");
+        }
+
+        res.status(200).send("Login Successful");
+    
+    } catch(err){
+        console.error("Error in /login route:", err);
+        res.status(500).send("Internal Server Error");
+    }
+})
 
 app.get('/user', async (req, res) => {
     try {
