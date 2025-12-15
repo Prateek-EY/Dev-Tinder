@@ -53,7 +53,7 @@ app.post("/login", async (req,res) => {
         }
 
         const token = await jwt.sign({ userId: user._id }, 'Savera146#', { expiresIn: '1h' });
-        res.cookie('token', token);
+        res.cookie('token', token,{expires: new Date(Date.now() + 900000), httpOnly: true});
         res.status(200).json({ message: "Login Successful", token });
     
     } catch(err){
