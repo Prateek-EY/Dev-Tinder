@@ -9,6 +9,7 @@ const bcrypt = require('bcrypt');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const { userAuth } = require('./middleware/middleware');
 
 
 const app = express();
@@ -61,23 +62,10 @@ app.post("/login", async (req,res) => {
     }
 })
 
-app.get('/user', async (req, res) => {
+app.get('/user',userAuth, async (req, res) => {
     try {
-    
-        const { token } = req.cookies;
-        if (!token) {
-            return res.status(401).send("Access Denied. No token provided.");
-        }
-
-        const isTokenValid = await jwt.verify(token, 'Savera146#');
-        if (!isTokenValid) {
-            return res.status(401).send("Invalid Token");
-        }
-
-        console.log(isTokenValid);
-        const usersById = await User.findById(isTokenValid.userId);
-        const users = await User.findOne({email : req.body.emailId});
-        res.status(200).json(usersById);
+        const usersById = await User.findById(req.userId);
+       res.send(usersById);
     } catch (err) {
         console.error("Error in /user route:", err);
         res.status(500).send("Internal Server Error");
