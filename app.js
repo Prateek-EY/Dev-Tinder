@@ -7,6 +7,8 @@ const User = require('./models/user');
 const bcrypt = require('bcrypt');
 
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 
 const app = express();
@@ -14,6 +16,7 @@ const app = express();
 console.log("Hello, Dev-Tinder!");
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post('/signup', async (req, res) => {
     try{
@@ -48,7 +51,9 @@ app.post("/login", async (req,res) => {
             return res.status(401).send("Incorrect Password");
         }
 
-        res.status(200).send("Login Successful");
+        const token = await jwt.sign({ userId: user._id }, 'Savera146#', { expiresIn: '1h' });
+        res.cookie('token', token);
+        res.status(200).json({ message: "Login Successful", token });
     
     } catch(err){
         console.error("Error in /login route:", err);
@@ -58,8 +63,21 @@ app.post("/login", async (req,res) => {
 
 app.get('/user', async (req, res) => {
     try {
+    
+        const { token } = req.cookies;
+        if (!token) {
+            return res.status(401).send("Access Denied. No token provided.");
+        }
+
+        const isTokenValid = await jwt.verify(token, 'Savera146#');
+        if (!isTokenValid) {
+            return res.status(401).send("Invalid Token");
+        }
+
+        console.log(isTokenValid);
+        const usersById = await User.findById(isTokenValid.userId);
         const users = await User.findOne({email : req.body.emailId});
-        res.status(200).json(users);
+        res.status(200).json(usersById);
     } catch (err) {
         console.error("Error in /user route:", err);
         res.status(500).send("Internal Server Error");
