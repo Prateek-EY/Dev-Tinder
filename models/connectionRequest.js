@@ -18,13 +18,12 @@ const connectionRequestSchema = new mongoose.Schema({
 
     }
 });
-connectionRequestSchema.pre('save',function (){
+connectionRequestSchema.pre('save', async function(next) {
     const connectionRequest = this;
     console.log(`Connection Request from ${connectionRequest.fromUser} to ${connectionRequest.toUser} with status ${connectionRequest.status} is being created.`);
     if(connectionRequest.fromUser.toString() === connectionRequest.toUser.toString()){
-        throw new Error("Cannot send connection request to oneself.");
+       return next(new Error("Cannot send connection request to oneself."));
     }
-    next();
 });
 connectionRequestSchema.index({fromUser: 1, toUser: 1});
 const ConnectionRequest = mongoose.model('ConnectionRequest', connectionRequestSchema);
