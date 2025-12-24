@@ -3,6 +3,7 @@ const userRouter = express.Router();
 const ConnectionRequest = require('../models/connectionRequest');
 const { userAuth } = require('../middleware/middleware');
 console.log("Inside userRouter file");
+const Users = require('../models/user');
 
 userRouter.get('/user/requests/received',userAuth, async (req, res) => {
     try{
@@ -39,6 +40,33 @@ userRouter.get('/user/requests/connections', userAuth, async (req, res) => {
         console.error("Error in /user/requests/connections route:", err);
         res.status(500).json({ message: "Internal server error" });
     }
+});
+
+userRouter.get('/users/feed',userAuth, async (req,res) => {
+    try{
+        const loggedInUserId = req.userId;
+        const connectionRequests = await ConnectionRequest.find({
+            $or:[{fromUser: loggedInUserId}, {toUser: loggedInUserId}]
+        });
+        console.log(connectionRequests);
+        const excludedUserIds = new Set();
+        connectionRequests.forEach(request => {
+            excludedUserIds.add(request.fromUser.toString());
+            excludedUserIds.add(request.toUser.toString());
+        });
+
+        const users = await Users.find({
+          $and:[
+            {_id: { $nin: Array.from(excludedUserIds) }},
+            {_id: { $ne: loggedInUserId }}          ]
+        }).select('firstName lastName email');
+        res.status(200).json(users);
+    }
+    catch(error){
+        console.error("Error in /feed route:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+
 });
 
 module.exports = userRouter;
