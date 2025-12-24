@@ -10,7 +10,7 @@ const userSchema = mongoose.Schema({
     maxlength: 50
     },
     lastName: { type: String },
-    email: { type: String, unique: true, required: true,validate(value){
+    email: { type: String,  required: true,validate(value){
         if(!validator.isEmail(value)){
             throw new Error("Email is invalid");
         }
@@ -40,5 +40,6 @@ userSchema.methods.isPasswordMatch = async function(password) {
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     return isPasswordMatch;
 }
+userSchema.index({email: 1});
 const User = mongoose.model('User', userSchema);
 module.exports = User;

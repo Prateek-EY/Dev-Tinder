@@ -13,6 +13,8 @@ app.use('/', require('./routes/auth'));
 console.log("After /auth route");
 app.use('/', require('./routes/profile'));
 console.log("After /profile route");
+app.use('/',require('./routes/request'));
+console.log("After /request route");
 
 connectDb().then(() => {
     console.log("Database connection established");
