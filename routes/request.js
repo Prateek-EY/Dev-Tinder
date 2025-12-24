@@ -14,6 +14,8 @@ requestRouter.post('/request/send/:status/:toUserId', userAuth, async (req, res)
             $or: [{ fromUser: fromUserId, toUser: toUserId }, { fromUser: toUserId, toUser: fromUserId }]
         });
 
+        console.log(existingConnectionRequest);
+
         if (existingConnectionRequest) {
             return res.status(400).json({ message: "Connection request already sent" });
         }
