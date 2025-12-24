@@ -15,6 +15,8 @@ app.use('/', require('./routes/profile'));
 console.log("After /profile route");
 app.use('/',require('./routes/request'));
 console.log("After /request route");
+app.use('/',require('./routes/user'));
+console.log("After /user route");
 
 connectDb().then(() => {
     console.log("Database connection established");
