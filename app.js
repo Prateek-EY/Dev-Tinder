@@ -1,11 +1,15 @@
 const express = require('express');
 const { connectDb }  = require('./config/database');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const app = express();
 
 console.log("Hello, Dev-Tinder!");
-
+app.use(cors({
+    origin: 'http://localhost:5174',
+    credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
    
